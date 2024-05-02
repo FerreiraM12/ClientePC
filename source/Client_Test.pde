@@ -7,7 +7,7 @@ import java.net.Socket;
 Socket socket;
 BufferedReader reader;
 String serverIP = "localhost";
-int serverPort = 8081;
+int serverPort = 12345;
 
 String username = "";
 String password = "";
@@ -28,9 +28,9 @@ void setup() {
   fullScreen();
   textAlign(CENTER, CENTER);
   generateStars();
-  
+
   try {
-    socket = new Socket("localhost", 12345); // Change localhost and port as needed
+    socket = new Socket(serverIP, serverPort);
     reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     socket.setSoTimeout(17);
     println("Connected to server");
@@ -80,7 +80,7 @@ void readNetworkData() throws Exception {
       players.get(id)[1] = y;
     }
   }
-  
+
 }
 
 void drawPlayer(int i) {
@@ -101,24 +101,24 @@ void drawGame() {
 }
 
 void draw() {
-  
+
   try {
     readNetworkData();
   } catch(Exception e) {
     e.printStackTrace();
   }
-  
+
   if (!loggedIn) {
     background(25, 25, 112);
     drawStars();
     drawSun(4*width/5, height/5, 50);
-    
+
     textSize(20);
     fill(128, 128, 128);
     rect(width/3 + 5, 3 * height/12 + 5, width/3, 4 * height/12);
     fill(192, 192, 192);
     rect(width/3, 3 * height/12, width/3, 4 * height/12);
-    
+
     // Username input
     fill(0);
     text("Username:", width/2, height/3 - 20);
@@ -126,7 +126,7 @@ void draw() {
     rect(width/2 - inputFieldWidth/2, height/3, inputFieldWidth, inputFieldHeight);
     fill(255);
     text(username, width/2, height/3 + inputFieldHeight/2);
-    
+
     // Password input
     fill(0);
     text("Password:", width/2, height/3 + 50);
@@ -134,13 +134,13 @@ void draw() {
     rect(width/2 - inputFieldWidth/2, height/3 + 70, inputFieldWidth, inputFieldHeight);
     fill(255);
     text(password.replaceAll(".", "*"), width/2, height/3 + 72 + inputFieldHeight/2);
-    
+
     // Login button
     fill(128, 128, 128);
     rect(width/2 - buttonWidth - 10, height/3 + 130, buttonWidth, buttonHeight);
     fill(255);
     text("Login", width/2 - buttonWidth/2 - 10, height/3 + buttonHeight/2 + 130);
-    
+
     // Create account button
     fill(128, 128, 128);
     rect(width/2 + 10, height/3 + 130, buttonWidth, buttonHeight);
@@ -155,7 +155,7 @@ void draw() {
     fill(0);
     textSize(20);
     text("Logged in as: " + username, width/2, height/8);
-    */ 
+    */
 
     drawGame();
   }
@@ -168,7 +168,7 @@ void mousePressed() {
       // Perform login action
       checkCredentials(username, password);
     }
-    
+
     // Check if the mouse is inside the create account button
     if (mouseX > width/2 + 10 && mouseX < width/2 + 10 + buttonWidth && mouseY > height/3 + 130 && mouseY < height/3 + 130 + buttonHeight) {
       // Perform create account action
@@ -180,7 +180,7 @@ void mousePressed() {
 
 void keyPressed() {
   if (!loggedIn) {
-    
+
     if (key != BACKSPACE && key != ENTER) {
       if (mouseX > width/2 - inputFieldWidth/2 && mouseX < width/2 + inputFieldWidth/2 && mouseY > height/3 && mouseY < height/3 + inputFieldHeight) {
         username += key;
@@ -189,7 +189,7 @@ void keyPressed() {
         password += key;
       }
     }
-    
+
     if (key == BACKSPACE) {
       if (mouseX > width/2 - 50 && mouseX < width/2 + 150 && mouseY > height/2 - 20 && mouseY < height/2 + 10) {
         if (username.length() > 0) {
@@ -202,12 +202,12 @@ void keyPressed() {
         }
       }
     }
-    
+
     if (key == ENTER) {
       checkCredentials(username, password);
     }
   }
-  
+
     if (key == 'a' || key == 'A') {
         sendCommand("a"); //<>//
     } else if (key == 'd' || key == 'D') {
@@ -237,10 +237,10 @@ void createAccount(String username, String password) {
 }
 
 void drawSun(int centerX, int centerY, int radius) {
-  
+
   fill(255, 255, 0);
   ellipse(centerX, centerY, radius * 2, radius * 2);
-  
+
   for (int i = 0; i < 3; i++) {
     int alpha = 150 - i * 50;
     fill(255, 255, 0, alpha);
