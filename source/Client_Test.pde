@@ -147,15 +147,8 @@ void draw() {
     fill(255);
     text("Create Account", width/2 + buttonWidth/2 + 10, height/3 + buttonHeight/2 + 130);
   } else {
-    /*
-    fill(128, 128, 128);
-    rect(width/3 + 5, 1 * height/12 + 5, width/3, 1 * height/12);
-    fill(192, 192, 192);
-    rect(width/3, 1 * height/12, width/3, 1 * height/12);
-    fill(0);
-    textSize(20);
-    text("Logged in as: " + username, width/2, height/8);
-    */
+    alert("Logged in as" +  username);
+    
 
     drawGame();
   }
@@ -173,7 +166,6 @@ void mousePressed() {
     if (mouseX > width/2 + 10 && mouseX < width/2 + 10 + buttonWidth && mouseY > height/3 + 130 && mouseY < height/3 + 130 + buttonHeight) {
       // Perform create account action
       createAccount(username, password);
-      loggedIn = true;
     }
   }
 }
@@ -207,7 +199,7 @@ void keyPressed() {
       checkCredentials(username, password);
     }
   }
-
+  
     if (key == 'a' || key == 'A') {
         sendCommand("a"); //<>//
     } else if (key == 'd' || key == 'D') {
@@ -227,13 +219,12 @@ void clientEvent(Client c) {
 }
 
 void checkCredentials(String username, String password) {
-  sendCommand("login " + username + " " + password + "");
+  sendCommand("login " + username + " " + password);
 }
 
 
 void createAccount(String username, String password) {
-  // TODO: similar logic to checkCredentials
-  println("Account created with username: " + username + " and password: " + password);
+  sendCommand("new_account " + username + " " + password);
 }
 
 void drawSun(int centerX, int centerY, int radius) {
@@ -261,6 +252,16 @@ void drawStars() {
   for (int i = 0; i < numStars; i++) {
     ellipse(starX[i], starY[i], 2, 2);
   }
+}
+
+void alert(String message) {
+    fill(128, 128, 128);
+    rect(width/3 + 5, 1 * height/12 + 5, width/3, 1 * height/12);
+    fill(192, 192, 192);
+    rect(width/3, 1 * height/12, width/3, 1 * height/12);
+    fill(0);
+    textSize(20);
+    text(message, width/2, height/8);
 }
 
 void checkConnectionStatus() {
