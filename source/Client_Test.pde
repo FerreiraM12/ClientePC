@@ -83,21 +83,39 @@ void readNetworkData() throws Exception {
 
 }
 
-void drawPlayer(int i) {
-  fill(0, 0, 255);
-  if (players.get(i) == null) {
+void drawPlayer(int id) {
+  if (players.get(id) == null) {
     return;
   }
-  float[] coords = players.get(i);
-  ellipse(coords[0], coords[1], 20, 20);
+  
+  float[] coords = players.get(id);
+  float x = coords[0];
+  float y = coords[1];
+  
+  // Assign color based on ID
+  color playerColor = getColorForPlayerID(id);
+  fill(playerColor);
+  
+  ellipse(x, y, 20, 20);
 }
 
+color getColorForPlayerID(int id) {
+  if (id % 3 == 0) {
+    return color(255, 0, 0); // Red
+  } else if (id % 3 == 1) {
+    return color(0, 255, 0); // Green
+  } else {
+    return color(0, 0, 255); // Blue
+  }
+}
 
 void drawGame() {
   background(25, 25, 112);
   drawSun(width/2,height/2, 50);
   drawStars();
-  drawPlayer(1);
+  for (Integer playerId : players.keySet()) {
+    drawPlayer(playerId);
+  }
 }
 
 void draw() {
