@@ -1,4 +1,4 @@
-import processing.net.*;
+import processing.net.*; //<>// //<>//
 import java.io.*;
 
 import java.nio.charset.StandardCharsets;
@@ -12,6 +12,7 @@ int serverPort = 12345;
 String username = "";
 String password = "";
 boolean loggedIn = false;
+boolean inMatch = false;
 
 int inputFieldHeight = 30;
 int inputFieldWidth = 150;
@@ -67,9 +68,13 @@ void readNetworkData() throws Exception {
   if (tokens[0].equals("login_success")) {
     println("Logged in succesfully!");
     loggedIn = true;
+  } else if (tokens[0].equals("Game_started") && loggedIn == true) {
+    println("Game started!" + tokens[1]);
+    sendCommand("gamePid " + tokens[1]);
+    inMatch = true;
   } else if (tokens[0].equals("login_failed")) {
     println("Invalid username or password");
-  } else if (tokens[0].equals("player_coords")) {
+  } else if (tokens[0].equals("player_pos")) {
     int id = Integer.parseInt(tokens[1]);
     float x = Float.parseFloat(tokens[2]);
     float y = Float.parseFloat(tokens[3]);
@@ -100,6 +105,7 @@ void drawPlayer(int id) {
 }
 
 color getColorForPlayerID(int id) {
+  id = abs(id);
   if (id % 3 == 0) {
     return color(255, 0, 0); // Red
   } else if (id % 3 == 1) {
@@ -164,10 +170,10 @@ void draw() {
     rect(width/2 + 10, height/3 + 130, buttonWidth, buttonHeight);
     fill(255);
     text("Create Account", width/2 + buttonWidth/2 + 10, height/3 + buttonHeight/2 + 130);
+  } else if (!inMatch && loggedIn) {
+    background(25, 25, 112);
+    alert("Logged in as " +  username + ". Waiting for players to join."); 
   } else {
-    alert("Logged in as" +  username);
-    
-
     drawGame();
   }
   checkConnectionStatus(); // It just tells you the connection was active at some point
@@ -217,16 +223,17 @@ void keyPressed() {
       checkCredentials(username, password);
     }
   }
-  
+  if (loggedIn && inMatch) {
     if (key == 'a' || key == 'A') {
-        sendCommand("a"); //<>//
+        sendCommand("a");
     } else if (key == 'd' || key == 'D') {
         sendCommand("d");
     } else if (key == 'w' || key == 'W') {
         sendCommand("w");
     } else if (key == 'q' || key == 'Q') {
-        sendCommand("q"); //<>//
+        sendCommand("q");
     }
+  }
 }
 
 void clientEvent(Client c) {
