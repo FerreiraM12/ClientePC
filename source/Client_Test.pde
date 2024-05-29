@@ -20,13 +20,15 @@ int buttonHeight = 30;
 int buttonWidth = 140;
 
 HashMap<Integer, float[]> players = new HashMap<>();
+HashMap<Integer, float[]> planets = new HashMap<>();
 int numStars = 100; // Number of stars
 float[] starX = new float[numStars];
 float[] starY = new float[numStars];
 
 
 void setup() {
-  fullScreen();
+  //fullScreen();
+  size(1000,800);
   textAlign(CENTER, CENTER);
   generateStars();
 
@@ -56,7 +58,7 @@ void readNetworkData() throws Exception {
   try {
     if (reader.ready()) {
         data = reader.readLine();
-        System.out.println(data);
+        //System.out.println(data);
     }
   } catch (Exception e) {
       System.out.println("Error reading input line: " + e.getMessage());
@@ -84,8 +86,19 @@ void readNetworkData() throws Exception {
       players.get(id)[0] = x;
       players.get(id)[1] = y;
     }
+    println(String.join(" ", tokens));
+  } else if (tokens[0].equals("planet_pos")) {
+    int id = Integer.parseInt(tokens[1]);
+    float x = Float.parseFloat(tokens[2]);
+    float y = Float.parseFloat(tokens[3]);
+    if (planets.get(id) == null) {
+      planets.put(id, new float[] {x, y});
+    } else {
+      planets.get(id)[0] = x;
+      planets.get(id)[1] = y;
+    }
+    println(String.join(" ", tokens));
   }
-
 }
 
 void drawPlayer(int id) {
@@ -104,6 +117,24 @@ void drawPlayer(int id) {
   ellipse(x, y, 20, 20);
 }
 
+void drawPlanet(int id) {
+  if (planets.get(id) == null) {
+    return;
+  }
+  
+  float[] coords = planets.get(id);
+  float x = coords[0];
+  float y = coords[1];
+  
+  // Assign color based on ID
+  color planetColor = getColorForPlayerID(id);
+  fill(planetColor);
+  
+  ellipse(x, y, 40, 40);
+  
+}
+
+
 color getColorForPlayerID(int id) {
   id = abs(id);
   if (id % 3 == 0) {
@@ -121,6 +152,9 @@ void drawGame() {
   drawStars();
   for (Integer playerId : players.keySet()) {
     drawPlayer(playerId);
+  }
+  for (Integer planetId : planets.keySet()) {
+    drawPlanet(planetId);
   }
 }
 
@@ -281,9 +315,9 @@ void drawStars() {
 
 void alert(String message) {
     fill(128, 128, 128);
-    rect(width/3 + 5, 1 * height/12 + 5, width/3, 1 * height/12);
+    rect(width/4 + 5, height/12 + 5, width/2, height/12);
     fill(192, 192, 192);
-    rect(width/3, 1 * height/12, width/3, 1 * height/12);
+    rect(width/4, height/12, width/2, height/12);
     fill(0);
     textSize(20);
     text(message, width/2, height/8);
